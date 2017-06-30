@@ -6,7 +6,7 @@ import * as React from 'react';
 import { SFC } from 'react';
 
 // GraphQL
-import { gql, graphql, InjectedGraphQLProps } from 'react-apollo';
+import { gql, graphql } from 'react-apollo';
 
 // Routing
 import {
@@ -20,7 +20,7 @@ import {
 // <Helmet> component for setting the page title
 import Helmet from 'react-helmet';
 
-import {compose, pure} from 'recompose';
+//import {compose, pure} from 'recompose';
 
 // NotFound 404 handler for unknown routes
 import { NotFound } from 'kit/lib/routing';
@@ -82,21 +82,47 @@ const query = gql`
   }
 `;
 
-interface MessageData {
-  allMessages?: Array<{
-    text: string;
-  }>;
-}
+// interface MessageData {
+//   allMessages?: Array<{
+//     text: string;
+//   }>;
+// }
 
 // ... then, let's create the component and decorate it with the `graphql`
 // HOC that will automatically populate `this.props` with the query data
 // once the GraphQL API request has been completed
-const connect = compose<InjectedGraphQLProps<MessageData>, {}>(
-  graphql(query),
-  pure
-);
+// const connect = compose<InjectedGraphQLProps<MessageData>, {}>(
+//   graphql(query),
+//   pure
+// );
 
-const GraphQLMessage = connect(({data}) => {
+// const GraphQLMessage = connect(({data}) => {
+//   const message = data!.allMessages && data!.allMessages![0].text;
+//   const isLoading = data!.loading ? 'yes' : 'nope';
+//   return (
+//     <div>
+//       <h2>Message from GraphQL server: <em>{message}</em></h2>
+//       <h2>Currently loading?: {isLoading}</h2>
+//     </div>
+//   );
+// });
+
+interface IProps {
+  data: any;
+}
+
+
+// interface IProps {
+//   data: {
+//     allMessages?: Array<{
+//       text: string;
+//     }>,
+//     loading: boolean
+//   }
+// }
+
+const GraphQLMessageComponent: (props: IProps) => JSX.Element = ({ data }) => {
+  
   const message = data!.allMessages && data!.allMessages![0].text;
   const isLoading = data!.loading ? 'yes' : 'nope';
   return (
@@ -105,7 +131,15 @@ const GraphQLMessage = connect(({data}) => {
       <h2>Currently loading?: {isLoading}</h2>
     </div>
   );
-});
+
+}
+
+const GraphQLMessage = graphql(query)(GraphQLMessageComponent)
+
+// const withData = graphql<IProps>(Query, {
+//   props: ({data}) => ({ console.log(data); })
+// })
+
 
 // Example of CSS, SASS and LESS styles being used together
 const Styles = () => (
